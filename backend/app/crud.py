@@ -47,11 +47,20 @@ def answer_queue_item(db: Session, item_id: str, answer_in: QueueItemAnswer) -> 
     db_item.status = QueueItemStatus.RESOLVED
     db_item.resolved_at = datetime.utcnow()
 
-    # If linked to a Task, update the task
+    # If linked to a Task, update the task with user's choices
     if db_item.task_id:
         task = db.query(Task).filter(Task.id == db_item.task_id).first()
-        if task and task.status == TaskStatus.WAITING_HUMAN:
-            task.status = TaskStatus.PENDING  # Resume task for agent
+        if task:
+            user_choices = []
+            if answer_in.selected_options:
+                user_choices.append(f"Выбранные опции: {', '.join(answer_in.selected_options)}")
+            if answer_in.text_response:
+                user_choices.append(f"Комментарий пользователя: {answer_in.text_response}")
+            
+            if user_choices:
+                task.prompt = f"{task.prompt}\n\n[Решение пользователя]:\n" + "\n".join(user_choices)
+            
+            task.status = TaskStatus.PENDING  # Resume task for Executor agent
 
     db.commit()
     db.refresh(db_item)
