@@ -1,5 +1,5 @@
 import React from 'react';
-import { Plus, Settings } from 'lucide-react';
+import { Plus, Settings, HelpCircle } from 'lucide-react';
 
 interface HeaderProps {
   activeTab: 'queue' | 'tasks' | 'skills';
@@ -7,6 +7,7 @@ interface HeaderProps {
   pendingCount: number;
   onOpenNewTask: () => void;
   onOpenSettings: () => void;
+  onOpenHelp: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -15,6 +16,7 @@ export const Header: React.FC<HeaderProps> = ({
   pendingCount,
   onOpenNewTask,
   onOpenSettings,
+  onOpenHelp,
 }) => {
   return (
     <header className="sticky top-0 z-30 bg-black/75 backdrop-blur-2xl border-b border-white/[0.07] px-4 py-2.5">
@@ -37,6 +39,13 @@ export const Header: React.FC<HeaderProps> = ({
                 {pendingCount} Pending
               </span>
             )}
+            <button
+              onClick={onOpenHelp}
+              className="w-7 h-7 rounded-full bg-white/[0.08] hover:bg-white/[0.14] text-zinc-300 hover:text-white flex items-center justify-center border border-white/[0.08] active:scale-95 transition-all"
+              title="AI Setup Assistant & Prompts"
+            >
+              <HelpCircle className="w-3.5 h-3.5 text-indigo-400" />
+            </button>
             <button
               onClick={onOpenSettings}
               className="w-7 h-7 rounded-full bg-white/[0.08] hover:bg-white/[0.14] text-zinc-300 hover:text-white flex items-center justify-center border border-white/[0.08] active:scale-95 transition-all"

@@ -4,6 +4,7 @@ import { Header } from './components/Header';
 import { QueueCard } from './components/QueueCard';
 import { NewTaskModal } from './components/NewTaskModal';
 import { SettingsModal } from './components/SettingsModal';
+import { HelpAssistantModal } from './components/HelpAssistantModal';
 import { TasksList } from './components/TasksList';
 import { SkillsRegistry } from './components/SkillsRegistry';
 import {
@@ -27,6 +28,7 @@ export function App() {
   const [skills, setSkills] = useState<Skill[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isHelpOpen, setIsHelpOpen] = useState(false);
   const [loading, setLoading] = useState(true);
 
   // Initialize Telegram Web App SDK
@@ -131,6 +133,7 @@ export function App() {
         pendingCount={queueItems.length}
         onOpenNewTask={() => setIsModalOpen(true)}
         onOpenSettings={() => setIsSettingsOpen(true)}
+        onOpenHelp={() => setIsHelpOpen(true)}
       />
 
       {/* Main Content Area */}
@@ -200,6 +203,12 @@ export function App() {
       <SettingsModal
         isOpen={isSettingsOpen}
         onClose={() => setIsSettingsOpen(false)}
+      />
+
+      {/* Help & Setup Assistant Modal */}
+      <HelpAssistantModal
+        isOpen={isHelpOpen}
+        onClose={() => setIsHelpOpen(false)}
       />
     </div>
   );
