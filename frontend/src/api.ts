@@ -1,6 +1,6 @@
 import type { QueueItem, Task, Skill } from './types';
 
-const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:8000/api/v1';
+const API_BASE = import.meta.env.VITE_API_BASE || '/api/v1';
 
 export const fetchPendingQueue = async (): Promise<QueueItem[]> => {
   const res = await fetch(`${API_BASE}/queue/pending`);
