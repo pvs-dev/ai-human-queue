@@ -131,3 +131,12 @@ class Skill(Base):
             self._schema_json = json.dumps(value)
         else:
             self._schema_json = None
+
+
+class SystemSetting(Base):
+    __tablename__ = "system_settings"
+
+    key = Column(String(100), primary_key=True)  # e.g. "telegram_bot_token", "telegram_admin_chat_id"
+    value = Column(Text, nullable=False, default="")
+    description = Column(String(255), nullable=True)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)

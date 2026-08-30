@@ -85,3 +85,22 @@ class SkillResponse(BaseModel):
     icon: str
     category: str
     parameters_schema: Optional[Dict[str, Any]] = None
+
+# System Settings Schemas
+class AppSettings(BaseModel):
+    telegram_bot_token: str = ""
+    telegram_webapp_url: str = "http://localhost:8000"
+    telegram_admin_chat_id: str = ""
+    worker_interval_seconds: int = 60
+    auditor_interval_seconds: int = 120
+    auto_audit_enabled: bool = True
+    custom_prompt_prefix: str = ""
+
+class SettingsUpdate(BaseModel):
+    telegram_bot_token: Optional[str] = None
+    telegram_webapp_url: Optional[str] = None
+    telegram_admin_chat_id: Optional[str] = None
+    worker_interval_seconds: Optional[int] = None
+    auditor_interval_seconds: Optional[int] = None
+    auto_audit_enabled: Optional[bool] = None
+    custom_prompt_prefix: Optional[str] = None

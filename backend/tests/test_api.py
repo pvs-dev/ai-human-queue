@@ -116,3 +116,25 @@ def test_create_task_with_skills():
     task = task_res.json()
     assert "/web-search" in task["skills"]
     assert task["status"] == "pending"
+
+def test_get_and_update_settings():
+    # 1. Get default settings
+    res = client.get("/api/v1/settings")
+    assert res.status_code == 200
+    settings = res.json()
+    assert "telegram_bot_token" in settings
+    assert "worker_interval_seconds" in settings
+
+    # 2. Update settings via API
+    update_payload = {
+        "telegram_bot_token": "test_token_12345",
+        "telegram_admin_chat_id": "999888777",
+        "worker_interval_seconds": 45
+    }
+    put_res = client.put("/api/v1/settings", json=update_payload)
+    assert put_res.status_code == 200
+    updated = put_res.json()
+    assert updated["telegram_bot_token"] == "test_token_12345"
+    assert updated["telegram_admin_chat_id"] == "999888777"
+    assert updated["worker_interval_seconds"] == 45
+

@@ -1,11 +1,12 @@
 import React from 'react';
-import { Plus } from 'lucide-react';
+import { Plus, Settings } from 'lucide-react';
 
 interface HeaderProps {
   activeTab: 'queue' | 'tasks' | 'skills';
   setActiveTab: (tab: 'queue' | 'tasks' | 'skills') => void;
   pendingCount: number;
   onOpenNewTask: () => void;
+  onOpenSettings: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -13,6 +14,7 @@ export const Header: React.FC<HeaderProps> = ({
   setActiveTab,
   pendingCount,
   onOpenNewTask,
+  onOpenSettings,
 }) => {
   return (
     <header className="sticky top-0 z-30 bg-black/75 backdrop-blur-2xl border-b border-white/[0.07] px-4 py-2.5">
@@ -29,12 +31,19 @@ export const Header: React.FC<HeaderProps> = ({
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5">
             {pendingCount > 0 && (
               <span className="px-2 py-0.5 text-[10px] font-semibold rounded-full bg-blue-500/15 text-blue-400 border border-blue-500/25">
                 {pendingCount} Pending
               </span>
             )}
+            <button
+              onClick={onOpenSettings}
+              className="w-7 h-7 rounded-full bg-white/[0.08] hover:bg-white/[0.14] text-zinc-300 hover:text-white flex items-center justify-center border border-white/[0.08] active:scale-95 transition-all"
+              title="Settings"
+            >
+              <Settings className="w-3.5 h-3.5" />
+            </button>
             <button
               onClick={onOpenNewTask}
               className="w-7 h-7 rounded-full bg-[#007AFF] text-white flex items-center justify-center shadow-sm hover:bg-[#0071e3] active:scale-95 transition-transform"

@@ -7,7 +7,7 @@ from app.config import settings
 from app.database import engine, Base, SessionLocal
 from app.seeds import seed_skills, seed_demo_items
 from app.scheduler import start_scheduler, shutdown_scheduler
-from app.api import queue, tasks, skills, events
+from app.api import queue, tasks, skills, events, settings as settings_api
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -44,6 +44,7 @@ app.add_middleware(
 app.include_router(queue.router, prefix="/api/v1/queue", tags=["Queue / Human-in-the-Loop"])
 app.include_router(tasks.router, prefix="/api/v1/tasks", tags=["Tasks"])
 app.include_router(skills.router, prefix="/api/v1/skills", tags=["Skills"])
+app.include_router(settings_api.router, prefix="/api/v1/settings", tags=["Settings"])
 app.include_router(events.router, prefix="/api/v1/events", tags=["Realtime Events"])
 
 @app.get("/api/v1/health")

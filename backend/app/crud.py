@@ -1,8 +1,9 @@
 from datetime import datetime
 from typing import List, Optional, Dict, Any
 from sqlalchemy.orm import Session
-from app.models import QueueItem, QueueItemStatus, QueueItemType, Task, TaskStatus, Skill
-from app.schemas import QueueItemCreate, QueueItemAnswer, TaskCreate, TaskUpdate, SkillCreate
+from app.models import QueueItem, QueueItemStatus, QueueItemType, Task, TaskStatus, Skill, SystemSetting
+from app.schemas import QueueItemCreate, QueueItemAnswer, TaskCreate, TaskUpdate, SkillCreate, AppSettings, SettingsUpdate
+from app.config import settings as env_settings
 
 # ==================== QueueItem CRUD ====================
 
@@ -164,3 +165,61 @@ def create_or_update_skill(db: Session, skill_in: SkillCreate) -> Skill:
     db.commit()
     db.refresh(db_skill)
     return db_skill
+
+# ==================== Settings CRUD ====================
+
+def get_setting_value(db: Session, key: str, default: str = "") -> str:
+    setting = db.query(SystemSetting).filter(SystemSetting.key == key).first()
+    if setting and setting.value is not None:
+        return setting.value
+    return default
+
+def set_setting_value(db: Session, key: str, value: str):
+    setting = db.query(SystemSetting).filter(SystemSetting.key == key).first()
+    if not setting:
+        setting = SystemSetting(key=key, value=value)
+        db.add(setting)
+    else:
+        setting.value = value
+        setting.updated_at = datetime.utcnow()
+    db.commit()
+
+def get_app_settings(db: Session) -> AppSettings:
+    """Retrieve full app settings merging DB values with environment defaults."""
+    token = get_setting_value(db, "telegram_bot_token", env_settings.TELEGRAM_BOT_TOKEN)
+    url = get_setting_value(db, "telegram_webapp_url", env_settings.TELEGRAM_WEBAPP_URL)
+    chat_id = get_setting_value(db, "telegram_admin_chat_id", env_settings.TELEGRAM_ADMIN_CHAT_ID)
+    
+    worker_int_raw = get_setting_value(db, "worker_interval_seconds", str(env_settings.WORKER_INTERVAL_SECONDS))
+    auditor_int_raw = get_setting_value(db, "auditor_interval_seconds", "120")
+    auto_audit_raw = get_setting_value(db, "auto_audit_enabled", "true")
+    prefix = get_setting_value(db, "custom_prompt_prefix", "")
+
+    return AppSettings(
+        telegram_bot_token=token,
+        telegram_webapp_url=url,
+        telegram_admin_chat_id=chat_id,
+        worker_interval_seconds=int(worker_int_raw) if worker_int_raw.isdigit() else 60,
+        auditor_interval_seconds=int(auditor_int_raw) if auditor_int_raw.isdigit() else 120,
+        auto_audit_enabled=auto_audit_raw.lower() in ("true", "1", "yes"),
+        custom_prompt_prefix=prefix
+    )
+
+def update_app_settings(db: Session, update_in: SettingsUpdate) -> AppSettings:
+    """Update settings in database."""
+    if update_in.telegram_bot_token is not None:
+        set_setting_value(db, "telegram_bot_token", update_in.telegram_bot_token)
+    if update_in.telegram_webapp_url is not None:
+        set_setting_value(db, "telegram_webapp_url", update_in.telegram_webapp_url)
+    if update_in.telegram_admin_chat_id is not None:
+        set_setting_value(db, "telegram_admin_chat_id", update_in.telegram_admin_chat_id)
+    if update_in.worker_interval_seconds is not None:
+        set_setting_value(db, "worker_interval_seconds", str(update_in.worker_interval_seconds))
+    if update_in.auditor_interval_seconds is not None:
+        set_setting_value(db, "auditor_interval_seconds", str(update_in.auditor_interval_seconds))
+    if update_in.auto_audit_enabled is not None:
+        set_setting_value(db, "auto_audit_enabled", "true" if update_in.auto_audit_enabled else "false")
+    if update_in.custom_prompt_prefix is not None:
+        set_setting_value(db, "custom_prompt_prefix", update_in.custom_prompt_prefix)
+
+    return get_app_settings(db)

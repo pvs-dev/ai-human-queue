@@ -1,4 +1,4 @@
-import type { QueueItem, Task, Skill } from './types';
+import type { QueueItem, Task, Skill, AppSettings } from './types';
 
 const API_BASE = import.meta.env.VITE_API_BASE || '/api/v1';
 
@@ -71,6 +71,33 @@ export const deleteTask = async (taskId: string): Promise<void> => {
 export const fetchSkills = async (): Promise<Skill[]> => {
   const res = await fetch(`${API_BASE}/skills`);
   if (!res.ok) throw new Error('Failed to fetch skills');
+  return res.json();
+};
+
+export const fetchSettings = async (): Promise<AppSettings> => {
+  const res = await fetch(`${API_BASE}/settings`);
+  if (!res.ok) throw new Error('Failed to fetch settings');
+  return res.json();
+};
+
+export const updateSettings = async (settings: Partial<AppSettings>): Promise<AppSettings> => {
+  const res = await fetch(`${API_BASE}/settings`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(settings),
+  });
+  if (!res.ok) throw new Error('Failed to update settings');
+  return res.json();
+};
+
+export const testTelegramPush = async (): Promise<{ ok: boolean; message: string }> => {
+  const res = await fetch(`${API_BASE}/settings/test-telegram`, {
+    method: 'POST',
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ detail: 'Failed to send test push' }));
+    throw new Error(err.detail || 'Failed to send test push');
+  }
   return res.json();
 };
 

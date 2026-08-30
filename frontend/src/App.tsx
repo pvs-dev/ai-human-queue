@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { Header } from './components/Header';
 import { QueueCard } from './components/QueueCard';
 import { NewTaskModal } from './components/NewTaskModal';
+import { SettingsModal } from './components/SettingsModal';
 import { TasksList } from './components/TasksList';
 import { SkillsRegistry } from './components/SkillsRegistry';
 import {
@@ -25,6 +26,7 @@ export function App() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [skills, setSkills] = useState<Skill[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [loading, setLoading] = useState(true);
 
   // Initialize Telegram Web App SDK
@@ -128,6 +130,7 @@ export function App() {
         setActiveTab={setActiveTab}
         pendingCount={queueItems.length}
         onOpenNewTask={() => setIsModalOpen(true)}
+        onOpenSettings={() => setIsSettingsOpen(true)}
       />
 
       {/* Main Content Area */}
@@ -191,6 +194,12 @@ export function App() {
         onClose={() => setIsModalOpen(false)}
         onSubmit={handleCreateTask}
         availableSkills={skills}
+      />
+
+      {/* Settings Modal */}
+      <SettingsModal
+        isOpen={isSettingsOpen}
+        onClose={() => setIsSettingsOpen(false)}
       />
     </div>
   );

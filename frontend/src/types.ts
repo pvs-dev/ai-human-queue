@@ -51,3 +51,13 @@ export interface Skill {
   category: string;
   parameters_schema?: Record<string, any>;
 }
+
+export interface AppSettings {
+  telegram_bot_token: string;
+  telegram_webapp_url: string;
+  telegram_admin_chat_id: string;
+  worker_interval_seconds: number;
+  auditor_interval_seconds: number;
+  auto_audit_enabled: boolean;
+  custom_prompt_prefix: string;
+}
